@@ -1,6 +1,6 @@
 # AI Movie Studio
 
-A mobile-friendly, local-first workspace for organizing movie ideas. This repository is being built in phases; this first working release focuses on the responsive application shell, offline app-shell caching, and private local project management.
+A mobile-friendly, local-first workspace for planning a film. This repository now includes practical authoring tools for scripts, scene boards, character profiles, locations, media organization, audio notes, timeline planning, project backups, and an installable PWA shell.
 
 ## Run locally
 
@@ -11,27 +11,27 @@ npm install
 npm run dev
 ```
 
-Open the local URL printed by Vite. To create a production build, run `npm run build`; run the small unit-test suite with `npm test`.
+Run checks and create a production build with `npm test` and `npm run build`.
 
-## What works now
+## Working features
 
-- Responsive dark workspace with dashboard, project library, and individual project workspace.
-- Create projects with a title, premise, genre, and format; browse, edit notes, and delete them.
-- Project records are stored in the browser's IndexedDB on the current device. No account or project upload is involved.
-- Displays browser network connectivity and listens for online/offline changes. This is a connectivity indicator only, not a check that an AI provider is usable.
-- PWA manifest and service worker cache the application shell for repeat visits while offline (after an initial successful visit). Production hosting must serve the site over HTTPS for service workers.
-- Input limits and a confirmation step before deleting a project.
+- Create, browse, edit, and delete projects stored in the browser's IndexedDB.
+- Draft story concepts, add screenplay scenes and storyboard notes, maintain character/location catalogs, and write subtitle/audio notes.
+- Import image, audio, and video files into project-local IndexedDB records (subject to browser storage quotas); preview supported media and arrange a simple saved edit list.
+- Export a JSON project backup and plain-text screenplay. The app does not claim to render MP4/WebM video.
+- Optional provider integration: configure a trusted HTTPS backend in Settings. Requests are POSTed to that endpoint with a task name, project metadata, and prompt content. Provider credentials belong on the backend, never in this public frontend.
+- Browser speech synthesis can preview narration where supported; it does not create an audio file.
+- Online/offline connectivity indicator and offline project editing. Production service worker caches the app shell and same-origin assets after an initial successful visit.
+- Responsive Android-friendly interface and web app manifest.
 
-## Not implemented yet
+## Provider request contract
 
-This is not yet an AI generation service or movie editor. Story/screenplay generation, local AI models, cloud provider adapters, character and media generation, audio, timeline editing, subtitle tools, video rendering/export, cloud task queues, and automatic job recovery are not implemented. Those controls are labeled as future work rather than returning fabricated results. No AI provider or paid service is required or configured.
+The configured backend receives JSON such as `{ "task": "story-draft", "project": { "id": "…", "title": "…", "genre": "…" }, "prompt": "…" }`. Other task names currently include `image-or-video` and `voice-audio`. The backend must enforce its own authentication, provider credentials, request limits, content policy, and CORS. This repository does not include a provider service or embed API keys. Only connect a backend you trust.
 
-IndexedDB and cached app assets are browser-local. Clearing site data, using another browser/device, or uninstalling the browser profile may remove them. Generated video assets and project backup import/export are not supported yet. The initial Vite development server is not itself a deployment; Cloudflare Pages deployment is not configured in this commit.
+## Not implemented / limitations
+
+Real AI story/image/video/audio generation requires a separately deployed compatible backend and configured provider. There is no built-in local AI model. The timeline is an edit plan, not a nonlinear video renderer; transitions, timed subtitle rendering, audio synchronization, MP4/WebM export, import of project backups, and cloud-job recovery are not implemented. Imported media consumes browser storage and may be evicted or lost if site data is cleared. Back up important work.
 
 ## Offline behavior
 
-Once the production app shell has been cached by a successful visit, the service worker can serve the UI when the network is unavailable. Projects remain accessible locally as long as browser storage is retained. The app does not download or run language, image, video, or audio AI models offline. External Google Fonts are an optional visual enhancement and are not bundled; offline display falls back to system fonts.
-
-## Build status
-
-Automated unit tests are included for project record validation. They have not been executed in this environment. No claim is made that production build, Android-device, PWA-install, offline-recovery, or video-export checks have passed; run the commands above and test on target devices before deployment.
+After the first successful online load, the service worker caches the app shell and eligible same-origin resources for later startup. IndexedDB projects remain available in the same browser profile. Provider calls require connectivity. Browser cache and storage behavior varies; offline installation and recovery must be verified on each target device. HTTPS is required for service workers outside localhost.

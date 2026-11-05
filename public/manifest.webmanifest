@@ -1,7 +1,7 @@
 {
   "name": "AI Movie Studio",
   "short_name": "Movie Studio",
-  "description": "A local-first workspace for planning your next film.",
+  "description": "A local-first workspace to plan and produce films.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
